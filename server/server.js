@@ -7,6 +7,7 @@ import { fileURLToPath } from 'url';
 
 import { connectDB, disconnectDB } from './config/db.js';
 import healthRoutes from './routes/healthRoutes.js';
+import authRoutes from './routes/authRoutes.js';
 import { notFoundHandler } from './middleware/notFoundHandler.js';
 import { errorHandler } from './middleware/errorHandler.js';
 
@@ -34,6 +35,7 @@ if (process.env.NODE_ENV !== 'test') {
 
 // API Routes
 app.use('/api/health', healthRoutes);
+app.use('/api/auth', authRoutes);
 
 // Root informational endpoint
 app.get('/', (req, res) => {

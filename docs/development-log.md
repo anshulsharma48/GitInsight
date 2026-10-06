@@ -42,3 +42,51 @@ This log documents the iterative milestones, architectural decisions, and testin
 
 #### Next Step:
 - Phase 2: User Authentication System (User model, bcrypt hashing, JWT issuance, `/api/auth/register`, `/api/auth/login`, `/api/auth/me`, auth middleware, and frontend Auth pages).
+
+---
+
+### Date: 2026-10-06
+### Milestone: Phase 2 — User Authentication System (Bcrypt, JWT, React AuthContext & Protected Routes)
+
+#### What Was Implemented:
+1. **User Schema & Model (`server/models/User.js`)**:
+   - Fields: `name`, `email` (unique, lowercase, validated format), `passwordHash` (`select: false`), timestamps.
+   - Secure serialization (`toJSON`) stripping `passwordHash` and `__v`.
+   - Instance method: `comparePassword(candidatePassword)` using `bcrypt.compare`.
+   - Static helper: `hashPassword(plainPassword)` using `bcrypt.hash` (10 salt rounds).
+2. **JWT Utilities (`server/utils/jwt.js`)**:
+   - `generateToken(userId)`: Signs HS256 tokens expiring in 7 days.
+   - `verifyToken(token)`: Validates JWT signature against `JWT_SECRET`.
+3. **Authentication Middleware (`server/middleware/authMiddleware.js`)**:
+   - `protect`: Extracts `Bearer <token>`, validates JWT, fetches user from database, attaches to `req.user`. Returns structured 401 if token is missing or invalid.
+4. **Auth Controller & Routes (`server/controllers/authController.js`, `server/routes/authRoutes.js`)**:
+   - `POST /api/auth/register`: Validates input, prevents duplicate emails, hashes password, saves user, returns JWT and user payload (HTTP 201).
+   - `POST /api/auth/login`: Validates credentials, checks password hash, returns JWT and user payload (HTTP 200).
+   - `GET /api/auth/me`: Protected route returning authenticated user profile (HTTP 200).
+5. **Frontend Client Authentication**:
+   - `client/src/context/AuthContext.jsx`: Provides reactive auth state (`user`, `token`, `isAuthenticated`, `loading`), persists JWT in `localStorage`, verifies token on boot.
+   - `client/src/components/ProtectedRoute.jsx`: Guards authenticated views and redirects unauthenticated visits to `/login`.
+   - `client/src/components/Navbar.jsx`: Displays dynamic user badge and logout button when authenticated, or Sign In / Register links when unauthenticated.
+   - `client/src/pages/Login.jsx`: Login view with validation, error banners, test account pre-fill button, and redirects to attempted URL.
+   - `client/src/pages/Register.jsx`: Register view with password confirmation checks, validation, and redirection.
+   - `client/src/pages/Dashboard.jsx`: Authenticated dashboard presenting active JWT session, GitHub repository import input, and example repository chips.
+   - `client/src/App.jsx`: Full React Router setup mounting `/`, `/login`, `/register`, and protected `/dashboard`.
+
+#### Important Decisions:
+- **`passwordHash` Hidden by Default**: Setting `select: false` on the Mongoose schema ensures that even if a developer forgets to exclude the field in future queries, password hashes are never accidentally sent in responses.
+- **Timing-Safe Generic Error Responses**: Login endpoint returns generic "Invalid email or password" to protect against user enumeration attacks.
+- **Test Account Quick-Fill**: Added a one-click button on `/login` to ease instructor / examiner testing during viva.
+
+#### Problems Encountered & Solutions:
+- **Email Regex Domain Restriction**: Initial regex `\w{2,3}` rejected `.local` / multi-part domain extensions. Upgraded to flexible standard `/^[^\s@]+@[^\s@]+\.[^\s@]+$/`.
+
+#### Testing Performed:
+- `POST /api/auth/register`: Verified registration of `developer@gitinsight.local` (HTTP 201).
+- Duplicate Email: Verified registration rejection with HTTP 400.
+- `POST /api/auth/login`: Verified valid credentials returned JWT (HTTP 200).
+- Invalid Password: Verified rejection with HTTP 401.
+- `GET /api/auth/me`: Verified access with Bearer token (HTTP 200) and rejection without token (HTTP 401).
+- Frontend Build: Verified `npm run build` succeeds in 549ms with zero errors.
+
+#### Next Step:
+- Phase 3 & Phase 4: GitHub API Integration & Repository Ingestion (`server/services/github/githubService.js`, Repository Mongoose model, repository validation, file tree retrieval, README parsing, language statistics, and dashboard repository cards).
