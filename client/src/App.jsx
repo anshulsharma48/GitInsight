@@ -7,6 +7,8 @@ import Login from './pages/Login';
 import Register from './pages/Register';
 import Dashboard from './pages/Dashboard';
 import RepositoryDetail from './pages/RepositoryDetail';
+import RepositoryAnalysis from './pages/RepositoryAnalysis';
+import RepositoryChat from './pages/RepositoryChat';
 import api from './services/api';
 import {
   Activity,
@@ -257,6 +259,22 @@ export default function App() {
                 element={
                   <ProtectedRoute>
                     <RepositoryDetail />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/repository/:id/analysis"
+                element={
+                  <ProtectedRoute>
+                    <RepositoryAnalysis />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/repository/:id/chat"
+                element={
+                  <ProtectedRoute>
+                    <RepositoryChat />
                   </ProtectedRoute>
                 }
               />

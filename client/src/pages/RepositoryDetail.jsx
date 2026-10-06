@@ -111,6 +111,20 @@ export default function RepositoryDetail() {
         </Link>
 
         <div className="flex items-center gap-3">
+          <Link
+            to={`/repository/${repo.id}/analysis`}
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-indigo-600/10 hover:bg-indigo-600/20 text-indigo-300 border border-indigo-500/30 text-xs font-semibold transition"
+          >
+            <ShieldCheck className="w-3.5 h-3.5" />
+            <span>Health & Static Analysis</span>
+          </Link>
+          <Link
+            to={`/repository/${repo.id}/chat`}
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-violet-600/10 hover:bg-violet-600/20 text-violet-300 border border-violet-500/30 text-xs font-semibold transition"
+          >
+            <MessageSquare className="w-3.5 h-3.5" />
+            <span>RAG Code Chat</span>
+          </Link>
           <a
             href={repo.githubUrl}
             target="_blank"

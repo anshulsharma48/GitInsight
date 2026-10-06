@@ -8,10 +8,17 @@
     "start": "node server.js",
     "dev": "node --watch server.js"
   },
-  "keywords": ["github", "rag", "code-analysis", "static-analysis", "mern"],
+  "keywords": [
+    "github",
+    "rag",
+    "code-analysis",
+    "static-analysis",
+    "mern"
+  ],
   "author": "GitInsight Team",
   "license": "ISC",
   "dependencies": {
+    "@google/genai": "^2.27.0",
     "axios": "^1.7.9",
     "bcryptjs": "^2.4.3",
     "cors": "^2.8.5",
