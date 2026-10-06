@@ -6,6 +6,7 @@ import Navbar from './components/Navbar';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import Dashboard from './pages/Dashboard';
+import RepositoryDetail from './pages/RepositoryDetail';
 import api from './services/api';
 import {
   Activity,
@@ -248,6 +249,14 @@ export default function App() {
                 element={
                   <ProtectedRoute>
                     <Dashboard />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/repository/:id"
+                element={
+                  <ProtectedRoute>
+                    <RepositoryDetail />
                   </ProtectedRoute>
                 }
               />
