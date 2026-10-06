@@ -1,0 +1,22 @@
+{
+  "name": "gitinsight",
+  "version": "1.0.0",
+  "description": "GitInsight — AI-Powered GitHub Repository Intelligence Platform",
+  "private": true,
+  "scripts": {
+    "server": "npm --prefix server run dev",
+    "client": "npm --prefix client run dev",
+    "server:start": "npm --prefix server run start",
+    "install:all": "npm --prefix server install && npm --prefix client install"
+  },
+  "keywords": [
+    "gitinsight",
+    "github",
+    "rag",
+    "ai",
+    "code-analysis",
+    "mern"
+  ],
+  "author": "GitInsight Team",
+  "license": "ISC"
+}
