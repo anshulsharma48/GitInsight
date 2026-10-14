@@ -1123,7 +1123,7 @@ export const answerRepositoryQuestion = async (
   */
 
   const isGreeting =
-    /^(hi|hello|hey|sup|yo|thanks|thank you|ok|okay|great|cool|nice|test)[!.\s]*$/i.test(
+    /^(hi+|hie+|hello|hey|sup|yo|thanks|thank you|ok|okay|great|cool|nice|test)[!.\s]*$/i.test(
       lowerQuestion
     );
 
