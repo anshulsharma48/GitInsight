@@ -40,3 +40,10 @@ Thumbs.db
 
 # In-memory MongoDB binaries / cache
 mongodb-binaries/
+
+# Private local study notes, guides & PDFs (never push to GitHub)
+docs/*.pdf
+docs/PROJECT_DOCUMENTATION_GUIDE.md
+docs/document.html
+docs/styled_document.html
+scripts/
