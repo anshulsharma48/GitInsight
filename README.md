@@ -179,5 +179,5 @@ To demonstrate GitInsight during presentation or evaluation:
 ## 👨‍💻 Author
 
 **Anshul Sharma**  
-Master of Computer Applications (MCA) Capstone Project  
+Master of Computer Applications
 GitHub: [@anshulsharma48](https://github.com/anshulsharma48)
