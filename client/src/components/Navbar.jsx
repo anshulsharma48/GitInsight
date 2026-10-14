@@ -1,7 +1,15 @@
-import React from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
-import { GitBranch, LogOut, User, LayoutDashboard, ShieldCheck, LogIn, UserPlus } from 'lucide-react';
+import React from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
+import {
+  GitBranch,
+  LogOut,
+  User,
+  LayoutDashboard,
+  ShieldCheck,
+  LogIn,
+  UserPlus,
+} from "lucide-react";
 
 export default function Navbar() {
   const { user, isAuthenticated, logout } = useAuth();
@@ -9,7 +17,7 @@ export default function Navbar() {
 
   const handleLogout = () => {
     logout();
-    navigate('/login');
+    navigate("/login");
   };
 
   return (
@@ -24,7 +32,7 @@ export default function Navbar() {
               GitInsight
             </span>
             <span className="hidden sm:inline-block ml-2 px-2 py-0.5 text-xs font-medium bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 rounded-full">
-              AI Platform
+              RepoAnalyzer
             </span>
           </div>
         </Link>
@@ -42,7 +50,9 @@ export default function Navbar() {
 
               <div className="hidden sm:flex items-center gap-2 px-3 py-1 rounded-lg bg-slate-950/60 border border-slate-800 text-xs text-slate-300">
                 <User className="w-3.5 h-3.5 text-slate-400" />
-                <span className="font-medium text-indigo-300">{user?.name}</span>
+                <span className="font-medium text-indigo-300">
+                  {user?.name}
+                </span>
               </div>
 
               <button

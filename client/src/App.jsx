@@ -1,15 +1,22 @@
-import React, { useState, useEffect } from 'react';
-import { BrowserRouter, Routes, Route, Navigate, Link, useNavigate } from 'react-router-dom';
-import { AuthProvider } from './context/AuthContext';
-import ProtectedRoute from './components/ProtectedRoute';
-import Navbar from './components/Navbar';
-import Login from './pages/Login';
-import Register from './pages/Register';
-import Dashboard from './pages/Dashboard';
-import RepositoryDetail from './pages/RepositoryDetail';
-import RepositoryAnalysis from './pages/RepositoryAnalysis';
-import RepositoryChat from './pages/RepositoryChat';
-import api from './services/api';
+import React, { useState, useEffect } from "react";
+import {
+  BrowserRouter,
+  Routes,
+  Route,
+  Navigate,
+  Link,
+  useNavigate,
+} from "react-router-dom";
+import { AuthProvider } from "./context/AuthContext";
+import ProtectedRoute from "./components/ProtectedRoute";
+import Navbar from "./components/Navbar";
+import Login from "./pages/Login";
+import Register from "./pages/Register";
+import Dashboard from "./pages/Dashboard";
+import RepositoryDetail from "./pages/RepositoryDetail";
+import RepositoryAnalysis from "./pages/RepositoryAnalysis";
+import RepositoryChat from "./pages/RepositoryChat";
+import api from "./services/api";
 import {
   Activity,
   Database,
@@ -25,17 +32,17 @@ import {
   Search,
   MessageSquare,
   ArrowRight,
-  Sparkles
-} from 'lucide-react';
+  Sparkles,
+} from "lucide-react";
 
 function HomeLanding() {
-  const [repoInput, setRepoInput] = useState('');
+  const [repoInput, setRepoInput] = useState("");
   const navigate = useNavigate();
 
   const handleQuickAnalyze = (e) => {
     e.preventDefault();
     if (!repoInput.trim()) return;
-    navigate('/dashboard', { state: { initialRepo: repoInput.trim() } });
+    navigate("/dashboard", { state: { initialRepo: repoInput.trim() } });
   };
 
   return (
@@ -55,13 +62,16 @@ function HomeLanding() {
         </h1>
 
         <p className="text-base sm:text-lg text-slate-400 max-w-2xl mx-auto leading-relaxed">
-          Instantly understand architecture, inspect code quality, find security vulnerabilities,
-          and chat with any GitHub repository.
+          Instantly understand architecture, inspect code quality, find security
+          vulnerabilities, and chat with any GitHub repository.
         </p>
 
         {/* Search / Input Box - RepoMind Style */}
         <div className="max-w-2xl mx-auto pt-4">
-          <form onSubmit={handleQuickAnalyze} className="relative flex items-center">
+          <form
+            onSubmit={handleQuickAnalyze}
+            className="relative flex items-center"
+          >
             <Search className="w-5 h-5 text-slate-500 absolute left-4 pointer-events-none" />
             <input
               type="text"
@@ -87,9 +97,12 @@ function HomeLanding() {
           <div className="w-10 h-10 rounded-xl bg-indigo-500/10 group-hover:bg-indigo-500/20 text-indigo-400 flex items-center justify-center transition">
             <Code2 className="w-5 h-5" />
           </div>
-          <h3 className="text-base font-semibold text-white">Architecture & Code Insights</h3>
+          <h3 className="text-base font-semibold text-white">
+            Architecture & Code Insights
+          </h3>
           <p className="text-xs text-slate-400 leading-relaxed">
-            Automatic directory breakdown, dependency mapping, and module relationship detection for rapid developer onboarding.
+            Automatic directory breakdown, dependency mapping, and module
+            relationship detection for rapid developer onboarding.
           </p>
         </div>
 
@@ -97,9 +110,12 @@ function HomeLanding() {
           <div className="w-10 h-10 rounded-xl bg-emerald-500/10 group-hover:bg-emerald-500/20 text-emerald-400 flex items-center justify-center transition">
             <ShieldCheck className="w-5 h-5" />
           </div>
-          <h3 className="text-base font-semibold text-white">Security & Code Quality</h3>
+          <h3 className="text-base font-semibold text-white">
+            Security & Code Quality
+          </h3>
           <p className="text-xs text-slate-400 leading-relaxed">
-            Deterministic 0-100 repository health score, security audits, secret leakage checks, and quality flags.
+            Deterministic 0-100 repository health score, security audits, secret
+            leakage checks, and quality flags.
           </p>
         </div>
 
@@ -107,9 +123,12 @@ function HomeLanding() {
           <div className="w-10 h-10 rounded-xl bg-violet-500/10 group-hover:bg-violet-500/20 text-violet-400 flex items-center justify-center transition">
             <MessageSquare className="w-5 h-5" />
           </div>
-          <h3 className="text-base font-semibold text-white">Codebase AI Chat & RAG</h3>
+          <h3 className="text-base font-semibold text-white">
+            Codebase AI Chat & RAG
+          </h3>
           <p className="text-xs text-slate-400 leading-relaxed">
-            Ask technical questions about the codebase with exact file and line citations grounded directly in repository source code.
+            Ask technical questions about the codebase with exact file and line
+            citations grounded directly in repository source code.
           </p>
         </div>
       </div>
@@ -117,43 +136,66 @@ function HomeLanding() {
       {/* How It Works Section (RepoMind-style workflow breakdown) */}
       <div className="space-y-8 pt-8 border-t border-slate-800/80">
         <div className="text-center space-y-2">
-          <span className="text-xs font-semibold uppercase tracking-wider text-indigo-400">Streamlined Workflow</span>
-          <h2 className="text-2xl sm:text-3xl font-bold text-white">How GitInsight Audits Codebases</h2>
+          <span className="text-xs font-semibold uppercase tracking-wider text-indigo-400">
+            Streamlined Workflow
+          </span>
+          <h2 className="text-2xl sm:text-3xl font-bold text-white">
+            How GitInsight Audits Codebases
+          </h2>
           <p className="text-xs sm:text-sm text-slate-400 max-w-lg mx-auto">
-            From raw GitHub URL to structured architecture diagrams, security findings, and grounded chat in seconds.
+            From raw GitHub URL to structured architecture diagrams, security
+            findings, and grounded chat in seconds.
           </p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
           <div className="p-5 rounded-xl bg-slate-900/50 border border-slate-800/80 space-y-2">
-            <span className="text-xs font-mono font-bold text-indigo-400 bg-indigo-500/10 px-2 py-0.5 rounded border border-indigo-500/20">01</span>
-            <h4 className="text-sm font-semibold text-white">Import Repository</h4>
+            <span className="text-xs font-mono font-bold text-indigo-400 bg-indigo-500/10 px-2 py-0.5 rounded border border-indigo-500/20">
+              01
+            </span>
+            <h4 className="text-sm font-semibold text-white">
+              Import Repository
+            </h4>
             <p className="text-xs text-slate-400 leading-relaxed">
-              Fetches repository metadata, dependency graphs, commits, and full file trees via GitHub REST API.
+              Fetches repository metadata, dependency graphs, commits, and full
+              file trees via GitHub REST API.
             </p>
           </div>
 
           <div className="p-5 rounded-xl bg-slate-900/50 border border-slate-800/80 space-y-2">
-            <span className="text-xs font-mono font-bold text-indigo-400 bg-indigo-500/10 px-2 py-0.5 rounded border border-indigo-500/20">02</span>
-            <h4 className="text-sm font-semibold text-white">Static Analysis</h4>
+            <span className="text-xs font-mono font-bold text-indigo-400 bg-indigo-500/10 px-2 py-0.5 rounded border border-indigo-500/20">
+              02
+            </span>
+            <h4 className="text-sm font-semibold text-white">
+              Static Analysis
+            </h4>
             <p className="text-xs text-slate-400 leading-relaxed">
-              Executes rule-based checks across 6 dimensions: Quality, Security, Docs, Architecture, Tests, and Maintenance.
+              Executes rule-based checks across 6 dimensions: Quality, Security,
+              Docs, Architecture, Tests, and Maintenance.
             </p>
           </div>
 
           <div className="p-5 rounded-xl bg-slate-900/50 border border-slate-800/80 space-y-2">
-            <span className="text-xs font-mono font-bold text-indigo-400 bg-indigo-500/10 px-2 py-0.5 rounded border border-indigo-500/20">03</span>
-            <h4 className="text-sm font-semibold text-white">Deterministic Scoring</h4>
+            <span className="text-xs font-mono font-bold text-indigo-400 bg-indigo-500/10 px-2 py-0.5 rounded border border-indigo-500/20">
+              03
+            </span>
+            <h4 className="text-sm font-semibold text-white">
+              Deterministic Scoring
+            </h4>
             <p className="text-xs text-slate-400 leading-relaxed">
-              Computes a transparent 0-100 repository health score with actionable severity-ranked findings.
+              Computes a transparent 0-100 repository health score with
+              actionable severity-ranked findings.
             </p>
           </div>
 
           <div className="p-5 rounded-xl bg-slate-900/50 border border-slate-800/80 space-y-2">
-            <span className="text-xs font-mono font-bold text-indigo-400 bg-indigo-500/10 px-2 py-0.5 rounded border border-indigo-500/20">04</span>
+            <span className="text-xs font-mono font-bold text-indigo-400 bg-indigo-500/10 px-2 py-0.5 rounded border border-indigo-500/20">
+              04
+            </span>
             <h4 className="text-sm font-semibold text-white">RAG Code Chat</h4>
             <p className="text-xs text-slate-400 leading-relaxed">
-              Indexes code into chunked embeddings. Answers questions grounded in retrieved code with exact line references.
+              Indexes code into chunked embeddings. Answers questions grounded
+              in retrieved code with exact line references.
             </p>
           </div>
         </div>
@@ -162,9 +204,12 @@ function HomeLanding() {
       {/* Trust & Academic Project Callout */}
       <div className="p-8 rounded-2xl bg-gradient-to-r from-slate-900 via-indigo-950/30 to-slate-900 border border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-6 shadow-xl">
         <div className="space-y-1.5 text-center sm:text-left">
-          <h3 className="text-lg font-bold text-white">Ready to inspect your project's repository?</h3>
+          <h3 className="text-lg font-bold text-white">
+            Ready to inspect your project's repository?
+          </h3>
           <p className="text-xs text-slate-400">
-            Audit dependencies, verify security hygiene, and chat with your codebase immediately.
+            Audit dependencies, verify security hygiene, and chat with your
+            codebase immediately.
           </p>
         </div>
         <div className="flex items-center gap-3">
@@ -234,7 +279,7 @@ export default function App() {
             </Routes>
           </main>
           <footer className="border-t border-slate-800/80 py-6 text-center text-xs text-slate-500">
-            GitInsight &bull; MCA Capstone Project &bull; Full-Stack AI & MERN
+            GitInsight &bull; Made by Anshul Sharma &bull; Full-Stack AI & MERN
           </footer>
         </div>
       </AuthProvider>
