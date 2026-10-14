@@ -15,30 +15,43 @@ export default function Login() {
 
   const from = location.state?.from?.pathname || '/dashboard';
 
+  const [fieldErrors, setFieldErrors] = useState({});
+
+  const validate = () => {
+    const errors = {};
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    if (!email.trim()) {
+      errors.email = 'Email address is required.';
+    } else if (!emailRegex.test(email.trim())) {
+      errors.email = 'Please enter a valid email address.';
+    }
+
+    if (!password) {
+      errors.password = 'Password is required.';
+    }
+
+    setFieldErrors(errors);
+    return Object.keys(errors).length === 0;
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
 
-    if (!email || !password) {
-      setError('Please provide both email and password.');
+    if (!validate()) {
       return;
     }
 
     setLoading(true);
     try {
-      await login(email, password);
+      await login(email.trim(), password);
       navigate(from, { replace: true });
     } catch (err) {
       setError(err.customMessage || 'Invalid email or password.');
     } finally {
       setLoading(false);
     }
-  };
-
-  const handleFillDemo = () => {
-    setEmail('developer@gitinsight.local');
-    setPassword('password123');
-    setError('');
   };
 
   return (
@@ -75,13 +88,20 @@ export default function Login() {
               <Mail className="w-4 h-4 text-slate-500 absolute left-3.5 top-1/2 -translate-y-1/2" />
               <input
                 type="email"
-                required
                 value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                onChange={(e) => {
+                  setEmail(e.target.value);
+                  if (fieldErrors.email) setFieldErrors((prev) => ({ ...prev, email: '' }));
+                }}
                 placeholder="dev@example.com"
-                className="w-full pl-10 pr-4 py-2.5 bg-slate-950 border border-slate-800 rounded-xl text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition"
+                className={`w-full pl-10 pr-4 py-2.5 bg-slate-950 border ${
+                  fieldErrors.email ? 'border-rose-500/80 focus:border-rose-500' : 'border-slate-800 focus:border-indigo-500'
+                } rounded-xl text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 transition`}
               />
             </div>
+            {fieldErrors.email && (
+              <p className="mt-1 text-[11px] text-rose-400">{fieldErrors.email}</p>
+            )}
           </div>
 
           <div>
@@ -92,13 +112,20 @@ export default function Login() {
               <Lock className="w-4 h-4 text-slate-500 absolute left-3.5 top-1/2 -translate-y-1/2" />
               <input
                 type="password"
-                required
                 value={password}
-                onChange={(e) => setPassword(e.target.value)}
+                onChange={(e) => {
+                  setPassword(e.target.value);
+                  if (fieldErrors.password) setFieldErrors((prev) => ({ ...prev, password: '' }));
+                }}
                 placeholder="••••••••"
-                className="w-full pl-10 pr-4 py-2.5 bg-slate-950 border border-slate-800 rounded-xl text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition"
+                className={`w-full pl-10 pr-4 py-2.5 bg-slate-950 border ${
+                  fieldErrors.password ? 'border-rose-500/80 focus:border-rose-500' : 'border-slate-800 focus:border-indigo-500'
+                } rounded-xl text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 transition`}
               />
             </div>
+            {fieldErrors.password && (
+              <p className="mt-1 text-[11px] text-rose-400">{fieldErrors.password}</p>
+            )}
           </div>
 
           <button
@@ -119,18 +146,6 @@ export default function Login() {
             )}
           </button>
         </form>
-
-        {/* Demo Helper Button */}
-        <div className="pt-2 border-t border-slate-800/80">
-          <button
-            type="button"
-            onClick={handleFillDemo}
-            className="w-full flex items-center justify-center gap-2 py-2 px-3 rounded-lg text-xs font-medium text-slate-400 hover:text-indigo-300 bg-slate-950/60 hover:bg-slate-950 border border-slate-800 transition"
-          >
-            <Sparkles className="w-3.5 h-3.5 text-indigo-400" />
-            <span>Use Verified Test Account</span>
-          </button>
-        </div>
 
         {/* Register Link */}
         <div className="text-center text-xs text-slate-400">

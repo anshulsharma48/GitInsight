@@ -1,14 +1,10 @@
 import Repository from '../models/Repository.js';
 import Analysis from '../models/Analysis.js';
 import { runDeterministicAnalysis } from '../analyzers/scoringEngine.js';
-import {
-  generateRepositorySummary,
-  generateRecommendations,
-  generateOnboardingGuide,
-} from '../services/ai/geminiService.js';
+import { generateRepositoryInsights } from '../services/ai/geminiService.js';
 
 /**
- * @desc    Run full static analysis and AI interpretation on a repository
+ * @desc    Run deterministic repository analysis and one optional AI interpretation
  * @route   POST /api/repositories/:id/analyze
  * @access  Private
  */
@@ -26,17 +22,12 @@ export const triggerAnalysis = async (req, res, next) => {
       });
     }
 
-    // 1. Run deterministic static analysis & scoring engine
+    // 1. Deterministic analysis is always available and does not consume AI quota.
     const deterministic = runDeterministicAnalysis(repository);
 
-    // 2. Generate AI grounded summaries & recommendations
-    const [aiSummary, aiRecommendations, aiOnboarding] = await Promise.all([
-      generateRepositorySummary(repository, deterministic),
-      generateRecommendations(repository, deterministic),
-      generateOnboardingGuide(repository),
-    ]);
+    // 2. One Gemini request generates summary + recommendations + onboarding together.
+    const ai = await generateRepositoryInsights(repository, deterministic);
 
-    // 3. Upsert Analysis record
     const analysisPayload = {
       repositoryId: repository._id,
       userId: req.user._id,
@@ -44,9 +35,9 @@ export const triggerAnalysis = async (req, res, next) => {
       categories: deterministic.categories,
       findings: deterministic.findings,
       metrics: deterministic.metrics,
-      aiSummary,
-      aiRecommendations,
-      aiOnboarding,
+      aiSummary: ai.aiSummary,
+      aiRecommendations: ai.aiRecommendations,
+      aiOnboarding: ai.aiOnboarding,
     };
 
     const analysis = await Analysis.findOneAndUpdate(
@@ -55,9 +46,18 @@ export const triggerAnalysis = async (req, res, next) => {
       { new: true, upsert: true, setDefaultsOnInsert: true }
     );
 
+    const aiMessage =
+  ai.source === 'gemini'
+    ? 'AI interpretation generated successfully.'
+    : ai.errorType === 'QUOTA'
+      ? 'Static analysis completed. Gemini quota is currently unavailable, so grounded fallback content was used.'
+      : ai.errorType === 'COOLDOWN'
+        ? 'Static analysis completed. Gemini is temporarily in cooldown, so grounded fallback content was used.'
+        : 'Static analysis completed. Grounded fallback content was used for AI sections.';
+
     return res.status(200).json({
       success: true,
-      message: 'Analysis completed successfully.',
+      message: `Analysis completed successfully. ${aiMessage}`,
       analysis,
     });
   } catch (error) {

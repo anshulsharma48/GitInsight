@@ -19,7 +19,7 @@ import {
   Activity,
   Cpu,
   MessageSquare,
-  ShieldAlert,
+  ShieldCheck,
   CheckCircle2
 } from 'lucide-react';
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from 'recharts';

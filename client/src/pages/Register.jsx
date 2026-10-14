@@ -1,44 +1,72 @@
-import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
-import { UserPlus, User, Mail, Lock, AlertCircle, RefreshCw, ArrowRight } from 'lucide-react';
+import React, { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
+import {
+  UserPlus,
+  User,
+  Mail,
+  Lock,
+  AlertCircle,
+  RefreshCw,
+  ArrowRight,
+} from "lucide-react";
 
 export default function Register() {
-  const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
-  const [error, setError] = useState('');
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
   const { register } = useAuth();
   const navigate = useNavigate();
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setError('');
+  const [fieldErrors, setFieldErrors] = useState({});
 
-    if (!name || !email || !password) {
-      setError('Please fill in all required fields.');
-      return;
+  const validate = () => {
+    const errors = {};
+    if (!name.trim()) {
+      errors.name = "Full name is required.";
+    } else if (name.trim().length < 2) {
+      errors.name = "Name must be at least 2 characters.";
     }
 
-    if (password.length < 6) {
-      setError('Password must be at least 6 characters long.');
-      return;
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!email.trim()) {
+      errors.email = "Email address is required.";
+    } else if (!emailRegex.test(email.trim())) {
+      errors.email = "Please enter a valid email address.";
+    }
+
+    if (!password) {
+      errors.password = "Password is required.";
+    } else if (password.length < 6) {
+      errors.password = "Password must be at least 6 characters.";
     }
 
     if (password !== confirmPassword) {
-      setError('Passwords do not match.');
+      errors.confirmPassword = "Passwords do not match.";
+    }
+
+    setFieldErrors(errors);
+    return Object.keys(errors).length === 0;
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setError("");
+
+    if (!validate()) {
       return;
     }
 
     setLoading(true);
     try {
-      await register(name, email, password);
-      navigate('/dashboard');
+      await register(name.trim(), email.trim(), password);
+      navigate("/dashboard");
     } catch (err) {
-      setError(err.customMessage || 'Registration failed. Please try again.');
+      setError(err.customMessage || "Registration failed. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -56,7 +84,8 @@ export default function Register() {
             Create an Account
           </h2>
           <p className="text-xs text-slate-400">
-            Join GitInsight to start auditing GitHub repositories with AI and static analysis.
+            Join GitInsight to start auditing GitHub repositories with AI and
+            static analysis.
           </p>
         </div>
 
@@ -78,13 +107,25 @@ export default function Register() {
               <User className="w-4 h-4 text-slate-500 absolute left-3.5 top-1/2 -translate-y-1/2" />
               <input
                 type="text"
-                required
                 value={name}
-                onChange={(e) => setName(e.target.value)}
-                placeholder="Ada Lovelace"
-                className="w-full pl-10 pr-4 py-2.5 bg-slate-950 border border-slate-800 rounded-xl text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition"
+                onChange={(e) => {
+                  setName(e.target.value);
+                  if (fieldErrors.name)
+                    setFieldErrors((prev) => ({ ...prev, name: "" }));
+                }}
+                placeholder="Anshul Sharma"
+                className={`w-full pl-10 pr-4 py-2.5 bg-slate-950 border ${
+                  fieldErrors.name
+                    ? "border-rose-500/80 focus:border-rose-500"
+                    : "border-slate-800 focus:border-indigo-500"
+                } rounded-xl text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 transition`}
               />
             </div>
+            {fieldErrors.name && (
+              <p className="mt-1 text-[11px] text-rose-400">
+                {fieldErrors.name}
+              </p>
+            )}
           </div>
 
           <div>
@@ -95,30 +136,54 @@ export default function Register() {
               <Mail className="w-4 h-4 text-slate-500 absolute left-3.5 top-1/2 -translate-y-1/2" />
               <input
                 type="email"
-                required
                 value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                onChange={(e) => {
+                  setEmail(e.target.value);
+                  if (fieldErrors.email)
+                    setFieldErrors((prev) => ({ ...prev, email: "" }));
+                }}
                 placeholder="ada@example.com"
-                className="w-full pl-10 pr-4 py-2.5 bg-slate-950 border border-slate-800 rounded-xl text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition"
+                className={`w-full pl-10 pr-4 py-2.5 bg-slate-950 border ${
+                  fieldErrors.email
+                    ? "border-rose-500/80 focus:border-rose-500"
+                    : "border-slate-800 focus:border-indigo-500"
+                } rounded-xl text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 transition`}
               />
             </div>
+            {fieldErrors.email && (
+              <p className="mt-1 text-[11px] text-rose-400">
+                {fieldErrors.email}
+              </p>
+            )}
           </div>
 
           <div>
             <label className="block text-xs font-medium text-slate-300 mb-1.5">
-              Password (Min. 6 chars)
+              Password (Min. 6 characters)
             </label>
             <div className="relative">
               <Lock className="w-4 h-4 text-slate-500 absolute left-3.5 top-1/2 -translate-y-1/2" />
               <input
                 type="password"
-                required
                 value={password}
-                onChange={(e) => setPassword(e.target.value)}
+                onChange={(e) => {
+                  setPassword(e.target.value);
+                  if (fieldErrors.password)
+                    setFieldErrors((prev) => ({ ...prev, password: "" }));
+                }}
                 placeholder="••••••••"
-                className="w-full pl-10 pr-4 py-2.5 bg-slate-950 border border-slate-800 rounded-xl text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition"
+                className={`w-full pl-10 pr-4 py-2.5 bg-slate-950 border ${
+                  fieldErrors.password
+                    ? "border-rose-500/80 focus:border-rose-500"
+                    : "border-slate-800 focus:border-indigo-500"
+                } rounded-xl text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 transition`}
               />
             </div>
+            {fieldErrors.password && (
+              <p className="mt-1 text-[11px] text-rose-400">
+                {fieldErrors.password}
+              </p>
+            )}
           </div>
 
           <div>
@@ -129,13 +194,28 @@ export default function Register() {
               <Lock className="w-4 h-4 text-slate-500 absolute left-3.5 top-1/2 -translate-y-1/2" />
               <input
                 type="password"
-                required
                 value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
+                onChange={(e) => {
+                  setConfirmPassword(e.target.value);
+                  if (fieldErrors.confirmPassword)
+                    setFieldErrors((prev) => ({
+                      ...prev,
+                      confirmPassword: "",
+                    }));
+                }}
                 placeholder="••••••••"
-                className="w-full pl-10 pr-4 py-2.5 bg-slate-950 border border-slate-800 rounded-xl text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition"
+                className={`w-full pl-10 pr-4 py-2.5 bg-slate-950 border ${
+                  fieldErrors.confirmPassword
+                    ? "border-rose-500/80 focus:border-rose-500"
+                    : "border-slate-800 focus:border-indigo-500"
+                } rounded-xl text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 transition`}
               />
             </div>
+            {fieldErrors.confirmPassword && (
+              <p className="mt-1 text-[11px] text-rose-400">
+                {fieldErrors.confirmPassword}
+              </p>
+            )}
           </div>
 
           <button
@@ -159,8 +239,11 @@ export default function Register() {
 
         {/* Login Link */}
         <div className="text-center text-xs text-slate-400">
-          Already have an account?{' '}
-          <Link to="/login" className="text-indigo-400 hover:text-indigo-300 font-medium">
+          Already have an account?{" "}
+          <Link
+            to="/login"
+            className="text-indigo-400 hover:text-indigo-300 font-medium"
+          >
             Sign in here
           </Link>
         </div>
