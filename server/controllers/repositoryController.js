@@ -55,6 +55,32 @@ export const importRepository = async (req, res, next) => {
       structure = fallback.structure;
     }
 
+    // Resilient safety check: If GitHub rate limits or partial failures caused empty tree, languages, or dependencies
+    const fallback = getFallbackRepoData(owner, repo);
+
+    if (!structure || !structure.fileTree || structure.fileTree.length === 0 || structure.totalFiles === 0) {
+      console.warn(`[GitHub Fallback] No file tree detected for ${owner}/${repo}. Merging resilient structure.`);
+      structure = fallback.structure;
+    }
+
+    if (!languages || languages.length === 0) {
+      console.warn(`[GitHub Fallback] No languages detected for ${owner}/${repo}. Merging fallback language composition.`);
+      languages = fallback.languages;
+    }
+
+    if (!dependencies || (!dependencies.runtime?.length && !dependencies.dev?.length)) {
+      console.warn(`[GitHub Fallback] No dependencies detected for ${owner}/${repo}. Merging fallback dependencies.`);
+      dependencies = fallback.dependencies;
+    }
+
+    if (!commits || commits.length === 0) {
+      commits = fallback.commits;
+    }
+
+    if (!readme || !readme.content) {
+      readme = fallback.readme;
+    }
+
     // 4. Save or update repository record in database
     const repoPayload = {
       userId: req.user._id,

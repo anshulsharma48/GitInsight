@@ -4,11 +4,20 @@ import api from '../services/api';
 const AuthContext = createContext(null);
 
 export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(null);
-  const [token, setToken] = useState(localStorage.getItem('gitinsight_token') || null);
-  const [loading, setLoading] = useState(true);
+  const getStoredUser = () => {
+    try {
+      const stored = localStorage.getItem('gitinsight_user');
+      return stored ? JSON.parse(stored) : null;
+    } catch {
+      return null;
+    }
+  };
 
-  // Verify and fetch current user profile on initial load
+  const [user, setUser] = useState(getStoredUser);
+  const [token, setToken] = useState(() => localStorage.getItem('gitinsight_token') || null);
+  const [loading, setLoading] = useState(() => !localStorage.getItem('gitinsight_token'));
+
+  // Verify session in background on initial load
   useEffect(() => {
     const loadUser = async () => {
       const storedToken = localStorage.getItem('gitinsight_token');
@@ -22,13 +31,20 @@ export const AuthProvider = ({ children }) => {
         const response = await api.get('/auth/me');
         if (response.data.success) {
           setUser(response.data.user);
+          localStorage.setItem('gitinsight_user', JSON.stringify(response.data.user));
           setToken(storedToken);
         }
       } catch (error) {
-        console.warn('Session expired or invalid token:', error.customMessage);
-        localStorage.removeItem('gitinsight_token');
-        setUser(null);
-        setToken(null);
+        // Only invalidate if the server explicitly responded with 401 Unauthorized
+        if (error.response?.status === 401) {
+          console.warn('Session expired or invalid token:', error.customMessage);
+          localStorage.removeItem('gitinsight_token');
+          localStorage.removeItem('gitinsight_user');
+          setUser(null);
+          setToken(null);
+        } else {
+          console.warn('Could not reach server to verify token, preserving cached session:', error.customMessage);
+        }
       } finally {
         setLoading(false);
       }
@@ -42,6 +58,7 @@ export const AuthProvider = ({ children }) => {
     const response = await api.post('/auth/register', { name, email, password });
     if (response.data.success && response.data.token) {
       localStorage.setItem('gitinsight_token', response.data.token);
+      localStorage.setItem('gitinsight_user', JSON.stringify(response.data.user));
       setToken(response.data.token);
       setUser(response.data.user);
     }
@@ -53,6 +70,7 @@ export const AuthProvider = ({ children }) => {
     const response = await api.post('/auth/login', { email, password });
     if (response.data.success && response.data.token) {
       localStorage.setItem('gitinsight_token', response.data.token);
+      localStorage.setItem('gitinsight_user', JSON.stringify(response.data.user));
       setToken(response.data.token);
       setUser(response.data.user);
     }
@@ -62,6 +80,7 @@ export const AuthProvider = ({ children }) => {
   // Logout action
   const logout = () => {
     localStorage.removeItem('gitinsight_token');
+    localStorage.removeItem('gitinsight_user');
     setUser(null);
     setToken(null);
   };
@@ -69,7 +88,7 @@ export const AuthProvider = ({ children }) => {
   const value = {
     user,
     token,
-    isAuthenticated: !!user,
+    isAuthenticated: !!user || !!token,
     loading,
     login,
     register,

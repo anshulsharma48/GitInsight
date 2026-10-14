@@ -279,7 +279,7 @@ export default function App() {
             </Routes>
           </main>
           <footer className="border-t border-slate-800/80 py-6 text-center text-xs text-slate-500">
-            GitInsight &bull; Made by Anshul Sharma &bull; Full-Stack AI & MERN
+            GitInsight &bull; AI-Powered GitHub Repository Intelligence Platform
           </footer>
         </div>
       </AuthProvider>

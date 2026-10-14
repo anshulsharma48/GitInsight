@@ -137,6 +137,9 @@ export const fetchRepositoryLanguages = async (owner, repo) => {
     return languageList;
   } catch (error) {
     console.warn(`Failed to fetch languages for ${owner}/${repo}:`, error.message);
+    if (error.response?.status === 403 || error.response?.status === 429) {
+      throw error;
+    }
     return [];
   }
 };
@@ -216,6 +219,9 @@ export const fetchRepositoryFileTree = async (owner, repo, defaultBranch = 'main
     };
   } catch (error) {
     console.warn(`Could not fetch git tree for ${owner}/${repo}:`, error.message);
+    if (error.response?.status === 403 || error.response?.status === 429) {
+      throw error;
+    }
     return { totalFiles: 0, totalDirs: 0, fileTree: [], keyDirectories: [] };
   }
 };
