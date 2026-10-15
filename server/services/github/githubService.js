@@ -10,7 +10,10 @@ const getGitHubClient = () => {
   };
 
   if (process.env.GITHUB_TOKEN) {
-    headers.Authorization = `Bearer ${process.env.GITHUB_TOKEN}`;
+    const rawToken = process.env.GITHUB_TOKEN.trim();
+    headers.Authorization = rawToken.startsWith('Bearer ') || rawToken.startsWith('token ')
+      ? rawToken
+      : `Bearer ${rawToken}`;
   }
 
   return axios.create({

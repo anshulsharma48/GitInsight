@@ -46,7 +46,7 @@ export const importRepository = async (req, res, next) => {
     } catch (apiError) {
       console.warn(`GitHub API notice for ${owner}/${repo}: ${apiError.message}. Activating resilient fallback data.`);
       // Activate resilient offline/cached dataset so testing/eval never fails
-      const fallback = getFallbackRepoData(owner, repo);
+      const fallback = getFallbackRepoData(owner, repo, details?.primaryLanguage);
       details = fallback.details;
       languages = fallback.languages;
       readme = fallback.readme;
@@ -56,7 +56,7 @@ export const importRepository = async (req, res, next) => {
     }
 
     // Resilient safety check: If GitHub rate limits or partial failures caused empty tree, languages, or dependencies
-    const fallback = getFallbackRepoData(owner, repo);
+    const fallback = getFallbackRepoData(owner, repo, details?.primaryLanguage);
 
     if (!structure || !structure.fileTree || structure.fileTree.length === 0 || structure.totalFiles === 0) {
       console.warn(`[GitHub Fallback] No file tree detected for ${owner}/${repo}. Merging resilient structure.`);
