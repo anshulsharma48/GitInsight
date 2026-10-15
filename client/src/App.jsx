@@ -51,7 +51,7 @@ function HomeLanding() {
       <div className="text-center space-y-6">
         <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-medium bg-slate-900/90 border border-slate-800 text-slate-300 shadow-inner">
           <Sparkles className="w-3.5 h-3.5 text-indigo-400" />
-          <span>AI-Powered Repository Intelligence & Code Review</span>
+          {/* <span>AI-Powered Repository Intelligence & Code Review</span> */}
         </div>
 
         <h1 className="text-4xl sm:text-6xl font-extrabold tracking-tight text-white leading-tight">
@@ -192,11 +192,11 @@ function HomeLanding() {
             <span className="text-xs font-mono font-bold text-indigo-400 bg-indigo-500/10 px-2 py-0.5 rounded border border-indigo-500/20">
               04
             </span>
-            <h4 className="text-sm font-semibold text-white">RAG Code Chat</h4>
+             <h4 className="text-sm font-semibold text-white">RAG Code Chat</h4>
             <p className="text-xs text-slate-400 leading-relaxed">
               Indexes code into chunked embeddings. Answers questions grounded
               in retrieved code with exact line references.
-            </p>
+            </p> 
           </div>
         </div>
       </div>
@@ -279,7 +279,7 @@ export default function App() {
             </Routes>
           </main>
           <footer className="border-t border-slate-800/80 py-6 text-center text-xs text-slate-500">
-            GitInsight &bull; AI-Powered GitHub Repository Intelligence Platform
+            GitInsight &bull; GitHub Repository Intelligence Platform
           </footer>
         </div>
       </AuthProvider>
